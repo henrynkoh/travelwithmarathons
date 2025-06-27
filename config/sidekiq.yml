@@ -1,0 +1,12 @@
+:concurrency: 5
+:timeout: 8
+:max_retries: 3
+:queues:
+  - default
+  - mailers
+
+:schedule:
+  crawl_travel_tips:
+    cron: '0 6 * * 2,5,0'  # Run at 6 AM on Tuesday, Friday, and Sunday
+    class: CrawlTravelTipsJob
+    queue: default 

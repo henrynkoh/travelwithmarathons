@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Marathon Wanderer Dashboard</title>
+  <style>
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      margin: 20px 0;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+    }
+    
+    .stat-box {
+      text-align: center;
+      padding: 10px;
+    }
+    
+    .stat-number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+    
+    .stat-label {
+      color: #7f8c8d;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+      background-color: #f8f9fa;
+    }
+    
+    .status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .status-pending { background: #ffeaa7; }
+    .status-approved { background: #81ecec; }
+    .status-produced { background: #74b9ff; }
+    .status-uploaded { background: #55efc4; }
+    .status-failed { background: #ff7675; }
+    
+    .button {
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      color: white;
+    }
+    
+    .button-primary { background: #0984e3; }
+    .button-success { background: #00b894; }
+    .button-danger { background: #d63031; }
+  </style>
+</head>
+<body>
+  <h1>Marathon Wanderer Dashboard</h1>
+
+  <% if notice %>
+    <div style="padding: 10px; background: #55efc4; margin: 10px 0; border-radius: 4px;">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <% if alert %>
+    <div style="padding: 10px; background: #ff7675; margin: 10px 0; border-radius: 4px;">
+      <%= alert %>
+    </div>
+  <% end %>
+
+  <div class="stats">
+    <div class="stat-box">
+      <div class="stat-number"><%= @stats[:total_tips] %></div>
+      <div class="stat-label">Travel Tips</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><%= @stats[:total_videos] %></div>
+      <div class="stat-label">Total Videos</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><%= @stats[:pending_videos] %></div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><%= @stats[:uploaded_videos] %></div>
+      <div class="stat-label">Uploaded</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-number"><%= @stats[:failed_videos] %></div>
+      <div class="stat-label">Failed</div>
+    </div>
+  </div>
+
+  <%= button_to 'Start New Crawl', crawl_path, class: 'button button-primary', style: 'margin: 20px 0;' %>
+
+  <h2>Recent Videos</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>City</th>
+        <th>Marathon</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @videos.each do |video| %>
+        <tr>
+          <td><%= video.travel_tip.city %></td>
+          <td><%= video.travel_tip.marathon %></td>
+          <td>
+            <span class="status status-<%= video.status %>">
+              <%= video.status.upcase %>
+            </span>
+          </td>
+          <td><%= time_ago_in_words(video.created_at) %> ago</td>
+          <td>
+            <% if video.status == 'pending' %>
+              <%= button_to 'Approve',
+                          approve_video_path(video),
+                          class: 'button button-success',
+                          method: :post %>
+            <% end %>
+            
+            <% if video.status == 'failed' %>
+              <%= button_to 'Retry',
+                          retry_video_path(video),
+                          class: 'button button-primary',
+                          method: :post %>
+            <% end %>
+            
+            <% if video.status == 'uploaded' && video.youtube_id.present? %>
+              <%= link_to 'View on YouTube',
+                         "https://youtube.com/watch?v=#{video.youtube_id}",
+                         class: 'button button-primary',
+                         target: '_blank' %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <h2>Travel Tips</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>City</th>
+        <th>Marathon</th>
+        <th>Sentiment</th>
+        <th>Videos</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @travel_tips.each do |tip| %>
+        <tr>
+          <td><%= tip.city %></td>
+          <td><%= tip.marathon %></td>
+          <td>
+            <span class="status status-<%= tip.sentiment == 'positive' ? 'uploaded' : 'failed' %>">
+              <%= tip.sentiment&.upcase %>
+            </span>
+          </td>
+          <td><%= tip.videos.count %></td>
+          <td>
+            <%= link_to 'View Source',
+                       tip.source_url,
+                       target: '_blank',
+                       class: 'button button-primary' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</body>
+</html> 

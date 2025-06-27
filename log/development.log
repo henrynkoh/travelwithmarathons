@@ -1,0 +1,24 @@
+  [1m[35m (0.6ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.2ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-06-27 13:23:25.797992', '2025-06-27 13:23:25.797994') RETURNING "key" /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Travelwithmarathons'*/[0m
+Migrating to CreateTravelTips (20250627131857)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[35mCREATE TABLE "travel_tips" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "city" varchar NOT NULL, "marathon" varchar, "itinerary" text, "case_study" text, "sentiment" varchar, "source_url" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_travel_tips_on_city" ON "travel_tips" ("city") /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_travel_tips_on_marathon" ON "travel_tips" ("marathon") /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250627131857') RETURNING "version" /*application='Travelwithmarathons'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Travelwithmarathons'*/[0m
+Migrating to CreateVideos (20250627131858)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "travel_tip_id" integer NOT NULL, "script" varchar NOT NULL, "video_path" varchar, "thumbnail_path" varchar, "youtube_id" varchar, "status" varchar DEFAULT 'pending' NOT NULL, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_4082590a40"
+FOREIGN KEY ("travel_tip_id")
+  REFERENCES "travel_tips" ("id")
+) /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_travel_tip_id" ON "videos" ("travel_tip_id") /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_youtube_id" ON "videos" ("youtube_id") /*application='Travelwithmarathons'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_status" ON "videos" ("status") /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250627131858') RETURNING "version" /*application='Travelwithmarathons'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Travelwithmarathons'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Travelwithmarathons'*/[0m
